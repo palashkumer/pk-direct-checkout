@@ -1,0 +1,19 @@
+.buy-now-button {
+    text-align: center;
+    padding: 1rem 2rem;
+    margin-top: 1rem;
+    text-decoration: none;
+    font-size: medium;
+    cursor: pointer;
+    border-style: none;
+    display: inline-flex;
+    justify-content: center;
+    overflow: hidden;
+    white-space: normal;
+    width: 100px;
+    background: #3b4870;
+    color: white;
+}
+.buy-now-button:hover{
+    background: #020718;
+}
