@@ -39,6 +39,8 @@ add_action( 'woocommerce_after_add_to_cart_button', 'pkdc_product_page' );
  * @return void
  */
 function pkwcdc_admin_enqueue_styles() {
+
+	// Enqueue my existing styles
 	wp_enqueue_style( 'pkwcdc_styles', plugins_url( 'assets/css/admin_style.css', __FILE__ ) );
 }
 
@@ -123,7 +125,7 @@ function pk_direct_checkout_settings_page_content() {
 	}
 	?>
 	<div class="wrap">
-		<h2>PK Direct Checkout Settings</h2>
+		<h2 class="settings-title">PK Direct Checkout Button Setting</h2>
 
 		<form class="form-container" method="post" action="">
 
