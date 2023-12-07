@@ -1,0 +1,45 @@
+.form-container {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.pkdc-label{
+    font-size: 15px;
+    font-weight: 500;
+}
+.pkdc-input-field{
+    justify-content: space-between;
+    display: flex;
+    margin: 8px;
+    background-color: white;
+    padding: 11px 22px;
+    border: 1px solid #dcdee1;
+    border-color: #dde6f9;
+    border-radius: 5px;
+    height: 100%;
+}
+.input-box-style{
+    width: 150;
+    margin-right: 10px;
+
+}
+
+#save-btn {
+    background-color: #0073e5;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top:5px;
+}
+
+#save-btn:hover {
+    background-color: #005aa2;
+}

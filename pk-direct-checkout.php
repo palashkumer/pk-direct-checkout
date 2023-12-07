@@ -11,17 +11,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Enqueue styles.
- *
- * @return void
- */
-function pkwcdc_enqueue_styles() {
-	wp_enqueue_style( 'your-plugin-styles', plugins_url( 'assets/css/style.css', __FILE__ ) );
-}
-
-add_action( 'wp_enqueue_scripts', 'pkwcdc_enqueue_styles' );
-
 
 /**
  * Function for direct checkout in shop page
@@ -44,7 +33,27 @@ function pkdc_product_page() {
 }
 add_action( 'woocommerce_after_add_to_cart_button', 'pkdc_product_page' );
 
+/**
+ * Enqueue styles.
+ *
+ * @return void
+ */
+function pkwcdc_admin_enqueue_styles() {
+	wp_enqueue_style( 'pkwcdc_styles', plugins_url( 'assets/css/admin_style.css', __FILE__ ) );
+}
 
+add_action( 'admin_enqueue_scripts', 'pkwcdc_admin_enqueue_styles' );
+
+/**
+ * Enqueue styles.
+ *
+ * @return void
+ */
+function pkwcdc_enqueue_styles() {
+	wp_enqueue_style( 'pkwcdc_styles', plugins_url( 'assets/css/style.css', __FILE__ ) );
+}
+
+add_action( 'wp_enqueue_scripts', 'pkwcdc_enqueue_styles' );
 
 /**
  * Function to add menu page
@@ -94,7 +103,7 @@ function pk_direct_checkout_settings_page_content() {
 	$button_label = get_option( 'buy_now_button_label', 'Buy Now' );
 	$button_color = get_option( 'buy_now_button_color', '#0073e5' );
 	$font_color   = get_option( 'buy_now_font_color', '#ffffff' );
-	$font_size    = get_option( 'buy_now_font_size', '16px' );
+	$font_size    = get_option( 'buy_now_font_size', 16 );
 
 	// Check if the form is submitted.
 	if ( isset( $_POST['submit_pk_direct_checkout_settings'] ) ) {
@@ -116,25 +125,35 @@ function pk_direct_checkout_settings_page_content() {
 	<div class="wrap">
 		<h2>PK Direct Checkout Settings</h2>
 
-		<form method="post" action="">
-			
-			<label for="buy_now_button_label">Buy Now Button Label: </label>
-			<input type="text" name="buy_now_button_label" id="buy_now_button_label" value="<?php echo esc_attr( $button_label ); ?>" />
-			
-			
-			<label for="buy_now_button_color">Button Color: </label>
-			<input type="color" name="buy_now_button_color" id="buy_now_button_color" value="<?php echo esc_attr( $button_color ); ?>" />
-			
-			
-			
-			<label for="buy_now_font_color">Font Color: </label>
-			<input type="color" name="buy_now_font_color" id="buy_now_font_color" value="<?php echo esc_attr( $font_color ); ?>" />
-			
-			<label for="buy_now_font_size">Font Size: </label>
-			<input type="text" name="buy_now_font_size" id="buy_now_font_size" value="<?php echo esc_attr( $font_size ); ?>" />
+		<form class="form-container" method="post" action="">
+
 		
+		<div class="pkdc-input-field">
+				<label class="pkdc-label" for="buy_now_button_label">Buy Now Button Label </label>
+				<input type="text" class="input-box-style" name="buy_now_button_label" id="buy_now_button_label" value="<?php echo esc_attr( $button_label ); ?>" />            
+			</div>
 			
-			<input type="submit" class="button button-primary" name="submit_pk_direct_checkout_settings" value="Save Changes" />
+			<div class="pkdc-input-field">
+				<label class="pkdc-label" for="buy_now_button_color">Button Color </label>
+				<input type="color" class="input-box-style" name="buy_now_button_color" id="buy_now_button_color" value="<?php echo esc_attr( $button_color ); ?>" />
+			</div>
+			
+			
+			<div class="pkdc-input-field">
+				<label class="pkdc-label" for="buy_now_font_color">Font Color </label>
+				<input type="color" class="input-box-style" name="buy_now_font_color" id="buy_now_font_color" value="<?php echo esc_attr( $font_color ); ?>" />
+			</div>
+
+			<div class="pkdc-input-field">
+				<label class="pkdc-label" for="buy_now_font_size">Font Size </label>
+				<input type="number" class="input-box-style" name="buy_now_font_size" id="buy_now_font_size" value="<?php echo esc_attr( $font_size ); ?>" />
+			</div>
+			
+			<div>
+				<input type="submit" id="save-btn" class="button button-primary" name="submit_pk_direct_checkout_settings" value="Save Changes" />
+			</div>
+			
+			
 		</form>
 	</div>
 	<?php
