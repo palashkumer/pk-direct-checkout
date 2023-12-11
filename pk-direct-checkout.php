@@ -40,7 +40,7 @@ add_action( 'woocommerce_after_add_to_cart_button', 'pkdc_product_page' );
  */
 function pkwcdc_admin_enqueue_styles() {
 
-	// Enqueue my existing styles
+	// Enqueue my existing styles.
 	wp_enqueue_style( 'pkwcdc_styles', plugins_url( 'assets/css/admin_style.css', __FILE__ ) );
 }
 
@@ -57,6 +57,38 @@ function pkwcdc_enqueue_styles() {
 
 add_action( 'wp_enqueue_scripts', 'pkwcdc_enqueue_styles' );
 
+
+/**
+ * Enqueue React Build js File.
+ *
+ * @return void
+ */
+
+function enqueue_admin_scripts() {
+	$settings = require plugin_dir_path( __FILE__ ) . 'assets/build/index.asset.php';
+
+	$plugin_url = plugin_dir_url( __FILE__ );
+	wp_enqueue_script(
+		'pk_direct_checkout_settings_page_content',
+		$plugin_url . '/assets/build/index.js',
+		array( 'wp-element', 'wp-api-fetch' ),
+		'1.00',
+		true
+	);
+
+	wp_localize_script(
+		'pk_direct_checkout_settings_page_content',
+		'pkdcSettings',
+		array(
+			'nonce' => wp_create_nonce( 'wp_rest' ),
+		)
+	);
+}
+
+
+add_action( 'admin_enqueue_scripts', 'enqueue_admin_scripts' );
+
+
 /**
  * Function to add menu page
  *
@@ -68,95 +100,70 @@ function pk_direct_checkout_menu_page() {
 		'PK Direct Checkout',
 		'manage_options',
 		'pk-direct-checkout',
-		'pk_direct_checkout_menu_page_content',
+		'pk_direct_checkout_settings_page_content',
 		'',
 		5
-	);
-
-	// Add submenu page.
-	add_submenu_page(
-		'pk-direct-checkout',
-		'Settings',
-		'Settings',
-		'manage_options',
-		'pk-direct-checkout-settings',
-		'pk_direct_checkout_settings_page_content'
 	);
 }
 add_action( 'admin_menu', 'pk_direct_checkout_menu_page' );
 
 
-/**
- *  Callback function for the main menu page
- *
- * @return void
- */
-function pk_direct_checkout_menu_page_content() {
-	echo '<div class="wrap"><h2>PK Direct Checkout</h2><p>Hello,I am Palash</p></div>';
-}
 
 /**
- * Callback function for the submenu page
+ * Callback function for the Menu page
  *
  * @return void
  */
 function pk_direct_checkout_settings_page_content() {
-	// Retrieve existing options.
-	$button_label = get_option( 'buy_now_button_label', 'Buy Now' );
-	$button_color = get_option( 'buy_now_button_color', '#0073e5' );
-	$font_color   = get_option( 'buy_now_font_color', '#ffffff' );
-	$font_size    = get_option( 'buy_now_font_size', 16 );
+	echo '<div class="wrap"><div id="pkwcdc-settings-root"></div></div>';
+}
 
-	// Check if the form is submitted.
-	if ( isset( $_POST['submit_pk_direct_checkout_settings'] ) ) {
-		// Sanitize and update options.
-		$new_label      = sanitize_text_field( $_POST['buy_now_button_label'] );
-		$new_color      = sanitize_text_field( $_POST['buy_now_button_color'] );
-		$new_font_color = sanitize_text_field( $_POST['buy_now_font_color'] );
-		$new_font_size  = sanitize_text_field( $_POST['buy_now_font_size'] );
 
-		update_option( 'buy_now_button_label', $new_label );
-		update_option( 'buy_now_button_color', $new_color );
-		update_option( 'buy_now_font_color', $new_font_color );
-		update_option( 'buy_now_font_size', $new_font_size );
+/**
+ * Register REST API Endpoint for saving options.
+ */
+function pkdc_register_rest_endpoint() {
+	register_rest_route(
+		'pkdc/v1',
+		'/save-options/',
+		array(
+			'methods'             => 'POST',
+			'callback'            => 'pkdc_save_options',
+			'permission_callback' => function () {
+				return current_user_can( 'manage_options' );
+			},
+		)
+	);
+}
 
-		// Display a success message.
-		echo '<div class="updated"><p>Settings saved!</p></div>';
-	}
-	?>
-	<div class="wrap">
-		<h2 class="settings-title">PK Direct Checkout Button Setting</h2>
+add_action( 'rest_api_init', 'pkdc_register_rest_endpoint' );
 
-		<form class="form-container" method="post" action="">
+/**
+ * Undocumented function
+ *
+ * @return void
+ */
+function pkdc_save_options( $request ) {
 
-		
-		<div class="pkdc-input-field">
-				<label class="pkdc-label" for="buy_now_button_label">Buy Now Button Label </label>
-				<input type="text" class="input-box-style" name="buy_now_button_label" id="buy_now_button_label" value="<?php echo esc_attr( $button_label ); ?>" />            
-			</div>
-			
-			<div class="pkdc-input-field">
-				<label class="pkdc-label" for="buy_now_button_color">Button Color </label>
-				<input type="color" class="input-box-style" name="buy_now_button_color" id="buy_now_button_color" value="<?php echo esc_attr( $button_color ); ?>" />
-			</div>
-			
-			
-			<div class="pkdc-input-field">
-				<label class="pkdc-label" for="buy_now_font_color">Font Color </label>
-				<input type="color" class="input-box-style" name="buy_now_font_color" id="buy_now_font_color" value="<?php echo esc_attr( $font_color ); ?>" />
-			</div>
+	$data = $request->get_json_params();
 
-			<div class="pkdc-input-field">
-				<label class="pkdc-label" for="buy_now_font_size">Font Size </label>
-				<input type="number" class="input-box-style" name="buy_now_font_size" id="buy_now_font_size" value="<?php echo esc_attr( $font_size ); ?>" />
-			</div>
-			
-			<div>
-				<input type="submit" id="save-btn" class="button button-primary" name="submit_pk_direct_checkout_settings" value="Save Changes" />
-			</div>
-			
-			
-		</form>
-	</div>
-	<?php
+	// Validate and sanitize the data.
+	$validated_data = array(
+		'buy_now_button_label' => sanitize_text_field( $data['buy_now_button_label'] ),
+		'buy_now_button_color' => sanitize_hex_color( $data['buy_now_button_color'] ),
+		'buy_now_font_color'   => sanitize_hex_color( $data['buy_now_font_color'] ),
+		'buy_now_font_size'    => intval( $data['buy_now_font_size'] ),
+	);
+
+	// Update options.
+	update_option( 'buy_now_button_label', $validated_data['buy_now_button_label'] );
+	update_option( 'buy_now_button_color', $validated_data['buy_now_button_color'] );
+	update_option( 'buy_now_font_color', $validated_data['buy_now_font_color'] );
+	update_option( 'buy_now_font_size', $validated_data['buy_now_font_size'] );
+
+	// Provide a success message in the response.
+	$response_data = array( 'message' => 'Options saved successfully.' );
+
+	// Return a success response.
+	return new WP_REST_Response( $response_data, 200 );
 }
