@@ -34,7 +34,7 @@ const FormLayout = () => {
         }
       );
 
-      console.log("Response:", response.data);
+      console.log("Response:", response);
 
       // Show success message
       setShowSuccessMessage(true);

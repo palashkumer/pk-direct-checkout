@@ -145,7 +145,9 @@ add_action( 'rest_api_init', 'pkdc_register_rest_endpoint' );
  */
 function pkdc_save_options( $request ) {
 
-	$data = $request->get_json_params();
+	// $data = $request->get_json_params();
+
+	$data = json_decode( $request->get_body(), true );
 
 	// Validate and sanitize the data.
 	$validated_data = array(
@@ -161,9 +163,5 @@ function pkdc_save_options( $request ) {
 	update_option( 'buy_now_font_color', $validated_data['buy_now_font_color'] );
 	update_option( 'buy_now_font_size', $validated_data['buy_now_font_size'] );
 
-	// Provide a success message in the response.
-	$response_data = array( 'message' => 'Options saved successfully.' );
-
-	// Return a success response.
-	return new WP_REST_Response( $response_data, 200 );
+	return rest_ensure_response( 'Options saved successfully.' );
 }
