@@ -8,7 +8,8 @@ Use the following git command to clone the repository. <br>
 git clone https://github.com/palashkumer/pk-direct-checkout.git
 ```
 ## Run
-Now open the terminal & go to this directory, ./wp-content/plugins\pk-direct-checkout\assets and run this commmand
+Now open the terminal & go to this directory, ./wp-content/plugins\pk-direct-checkout\assets 
+use this command
 ```
 npm start
 ```
