@@ -139,7 +139,7 @@ function pkdc_register_rest_endpoint() {
 add_action( 'rest_api_init', 'pkdc_register_rest_endpoint' );
 
 /**
- * Undocumented function
+ * Save Callback Function
  *
  * @return void
  */
@@ -164,4 +164,40 @@ function pkdc_save_options( $request ) {
 	update_option( 'buy_now_font_size', $validated_data['buy_now_font_size'] );
 
 	return rest_ensure_response( 'Options saved successfully.' );
+}
+
+
+/**
+ * Register REST API Endpoint for fetching options.
+ */
+function pkdc_register_get_options_endpoint() {
+	register_rest_route(
+		'pkdc/v1',
+		'/options/',
+		array(
+			'methods'             => 'GET',
+			'callback'            => 'pkdc_get_options',
+			'permission_callback' => function () {
+				return current_user_can( 'manage_options' );
+			},
+		)
+	);
+}
+
+add_action( 'rest_api_init', 'pkdc_register_get_options_endpoint' );
+
+/**
+ * Callback function for fetching options.
+ *
+ * @return WP_REST_Response
+ */
+function pkdc_get_options() {
+	$options = array(
+		'buy_now_button_label' => get_option( 'buy_now_button_label', 'Buy Now' ),
+		'buy_now_button_color' => get_option( 'buy_now_button_color', '#0073e5' ),
+		'buy_now_font_color'   => get_option( 'buy_now_font_color', '#ffffff' ),
+		'buy_now_font_size'    => get_option( 'buy_now_font_size', 16 ),
+	);
+
+	return rest_ensure_response( $options );
 }

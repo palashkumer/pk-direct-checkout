@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const FormLayout = () => {
   const [formValues, setFormValues] = useState({
-    buy_now_button_label: "Buy Now",
+    buy_now_button_label: "",
     buy_now_button_color: "#0073e5",
     buy_now_font_color: "#ffffff",
     buy_now_font_size: 16,
@@ -13,10 +13,10 @@ const FormLayout = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormValues({
-      ...formValues,
+    setFormValues((prevFormValues) => ({
+      ...prevFormValues,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -36,6 +36,9 @@ const FormLayout = () => {
 
       console.log("Response:", response);
 
+      // Assuming the response.data contains the updated form values
+      setFormValues(response.data);
+
       // Show success message
       setShowSuccessMessage(true);
 
@@ -45,11 +48,34 @@ const FormLayout = () => {
     } catch (error) {
       console.error("Error:", error);
     }
-    setFormValues((prevFormValues) => {
-      console.log("Updated State:", prevFormValues);
-      return prevFormValues;
-    });
   };
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const response = await axios.get("/wp-json/pkdc/v1/options/", {
+          headers: {
+            "Content-Type": "application/json",
+            "X-WP-Nonce": pkdcSettings.nonce,
+          },
+        });
+
+        console.log("Fetched Options Response:", response);
+
+        if (response && response.data) {
+          console.log("Fetched Options Data:", response.data);
+          // Set the form values with the fetched options
+          setFormValues(response.data);
+        } else {
+          console.error("Empty or invalid response data.");
+        }
+      } catch (error) {
+        console.error("Error fetching options:", error);
+      }
+    };
+
+    fetchOptions();
+  }, []);
 
   return (
     <div className="wrap">
@@ -126,7 +152,7 @@ const FormLayout = () => {
           className="success-message"
           style={{ color: "green", fontWeight: "bold", fontSize: "18px" }}
         >
-          Data submitted successfully!
+          Data Changes successfully!
         </div>
       )}
     </div>
